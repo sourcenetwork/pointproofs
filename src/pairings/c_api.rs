@@ -549,7 +549,7 @@ pub unsafe extern "C" fn pointproofs_same_commit_batch_verify(
     verifier: pointproofs_vp,
     com: pointproofs_commitment,
     proof: pointproofs_proof,
-    set: *const libc::size_t,
+    set: *const libc::uint32_t,
     values: *const pointproofs_value,
     nvalues: libc::size_t,
 ) -> bool {
@@ -558,10 +558,11 @@ pub unsafe extern "C" fn pointproofs_same_commit_batch_verify(
     let pproof = &*(proof.data as *const Proof);
 
     // parse indices
-    let tmp = slice::from_raw_parts::<libc::size_t>(set, nvalues);
+    let tmp = slice::from_raw_parts(set as *const u32, nvalues);
     let mut set_list: Vec<usize> = vec![];
     for e in tmp {
-        set_list.push(*e);
+        println!("indicie (c-rust): {}", *e as usize);
+        set_list.push(*e as usize);
     }
 
     // parse values

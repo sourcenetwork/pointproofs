@@ -281,7 +281,7 @@ int32_t pointproofs_same_commit_aggregate(struct pointproofs_commitment com,
 bool pointproofs_same_commit_batch_verify(struct pointproofs_vp verifier,
                                           struct pointproofs_commitment com,
                                           struct pointproofs_proof proof,
-                                          const size_t *set,
+                                          const uint32_t *set,
                                           const struct pointproofs_value *values,
                                           size_t nvalues);
 
