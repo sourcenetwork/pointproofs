@@ -151,7 +151,6 @@ impl Proof {
             return Err(ERR_INVALID_INDEX_OUT_OF_BOUNDS.to_owned());
         };
         for e in indices {
-            println!("indicie (rust): {}", *e);
             if *e >= prover_params.n {
                 return Err(ERR_INVALID_INDEX_TOO_BIG.to_owned());
             }

@@ -395,7 +395,7 @@ pub unsafe extern "C" fn pointproofs_prove_batch_aggregated(
     commit: pointproofs_commitment,
     values: *const pointproofs_value,
     n: libc::size_t,
-    idx: *const libc::size_t,
+    idx: *const libc::uint32_t,
     nindexes: libc::size_t,
     proof: *mut pointproofs_proof,
 ) -> i32 {
@@ -407,11 +407,10 @@ pub unsafe extern "C" fn pointproofs_prove_batch_aggregated(
     }
     
     // parse indices
-    let tmp = slice::from_raw_parts::<libc::size_t>(idx, nindexes);
+    let tmp = slice::from_raw_parts(idx as *const u32, nindexes);
     let mut set_list: Vec<usize> = vec![];
     for e in tmp {
-        println!("indicie (c_api): {}", *e);
-        set_list.push(*e);
+        set_list.push(*e as usize);
     }
 
     let pcom = &*(commit.data as *const Commitment);
