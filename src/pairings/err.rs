@@ -6,6 +6,9 @@ pub(crate) const ERR_CIPHERSUITE: &str = "Invalid ciphersuite ID";
 pub(crate) const ERR_COMPRESS: &str = "Only support compress=true mode";
 pub(crate) const ERR_INVALID_VALUE: &str = "Invalid number of values";
 pub(crate) const ERR_INVALID_INDEX: &str = "Invalid index";
+pub(crate) const ERR_INVALID_INDEX_OUT_OF_BOUNDS: &str = "Invalid index: length out of bounds";
+pub(crate) const ERR_INVALID_INDEX_TOO_BIG: &str = "Invalid index: element too big";
+pub(crate) const ERR_INVALID_INDEX_MISMATCH_LENGTH: &str = "Invalid index";
 pub(crate) const ERR_DUPLICATED_INDEX: &str = "Duplicated index";
 pub(crate) const ERR_INDEX_PROOF_NOT_MATCH: &str = "Length of index and proof sets do not match";
 pub(crate) const ERR_X_COM_SIZE: &str =

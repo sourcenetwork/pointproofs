@@ -8,20 +8,6 @@
 #include <stdlib.h>
 
 #if !defined(GROUP_SWITCHED)
-/**
- * Size for serialized commitment.
- */
-#define COMMIT_LEN 49
-#endif
-
-#if defined(GROUP_SWITCHED)
-/**
- * Size for serialized commitment.
- */
-#define COMMIT_LEN 97
-#endif
-
-#if !defined(GROUP_SWITCHED)
 #define POINTPROOFSG1_LEN 48
 #endif
 
@@ -35,6 +21,20 @@
 
 #if defined(GROUP_SWITCHED)
 #define POINTPROOFSG2_LEN 48
+#endif
+
+#if !defined(GROUP_SWITCHED)
+/**
+ * Size for serialized commitment.
+ */
+#define COMMIT_LEN 49
+#endif
+
+#if defined(GROUP_SWITCHED)
+/**
+ * Size for serialized commitment.
+ */
+#define COMMIT_LEN 97
 #endif
 
 #if !defined(GROUP_SWITCHED)
@@ -59,50 +59,12 @@ typedef struct pointproofs_pp {
 } pointproofs_pp;
 
 /**
- * values
- */
-typedef struct pointproofs_value {
-  const uint8_t *data;
-  size_t len;
-} pointproofs_value;
-
-/**
- * deserialized commitment struct
- */
-typedef struct pointproofs_commitment {
-  void *data;
-} pointproofs_commitment;
-
-/**
- * serialized commitment struct
- */
-typedef struct pointproofs_commitment_bytes {
-  uint8_t *data;
-  uintptr_t len;
-} pointproofs_commitment_bytes;
-
-/**
  * serialized prover parameter struct
  */
 typedef struct pointproofs_pp_bytes {
   uint8_t *data;
   uintptr_t len;
 } pointproofs_pp_bytes;
-
-/**
- * deserialized proof struct
- */
-typedef struct pointproofs_proof {
-  void *data;
-} pointproofs_proof;
-
-/**
- * serialized proof struct
- */
-typedef struct pointproofs_proof_bytes {
-  uint8_t *data;
-  uintptr_t len;
-} pointproofs_proof_bytes;
 
 /**
  * deserialized verifier parameter struct
@@ -120,70 +82,97 @@ typedef struct pointproofs_vp_bytes {
 } pointproofs_vp_bytes;
 
 /**
+ * deserialized commitment struct
+ */
+typedef struct pointproofs_commitment {
+  void *data;
+} pointproofs_commitment;
+
+/**
+ * serialized commitment struct
+ */
+typedef struct pointproofs_commitment_bytes {
+  uint8_t *data;
+  uintptr_t len;
+} pointproofs_commitment_bytes;
+
+/**
+ * deserialized proof struct
+ */
+typedef struct pointproofs_proof {
+  void *data;
+} pointproofs_proof;
+
+/**
+ * serialized proof struct
+ */
+typedef struct pointproofs_proof_bytes {
+  uint8_t *data;
+  uintptr_t len;
+} pointproofs_proof_bytes;
+
+/**
  * non-serialized
  */
 typedef struct pointproofs_params {
-  pointproofs_pp prover;
-  pointproofs_vp verifier;
+  struct pointproofs_pp prover;
+  struct pointproofs_vp verifier;
 } pointproofs_params;
 
 /**
- * Generate a commitment
+ * values
  */
-int32_t pointproofs_commit(pointproofs_pp prover,
-                           const pointproofs_value *values,
-                           uintptr_t n,
-                           pointproofs_commitment *commit);
+typedef struct pointproofs_value {
+  const uint8_t *data;
+  size_t len;
+} pointproofs_value;
 
 /**
- * Deserializeing bytes into commitments
+ * Serializing a prove parameter into bytes
  */
-int32_t pointproofs_commit_deserial(pointproofs_commitment_bytes commit_bytes,
-                                    pointproofs_commitment *commit);
+int32_t pointproofs_pp_serial(struct pointproofs_pp pprover, struct pointproofs_pp_bytes *bytes);
+
+void pointproofs_free_pp_string(struct pointproofs_pp_bytes buf);
+
+int32_t pointproofs_pp_deserial(struct pointproofs_pp_bytes pprover, struct pointproofs_pp *prover);
+
+/**
+ * Serializing a prove parameter into bytes
+ */
+int32_t pointproofs_vp_serial(struct pointproofs_vp pverifier, struct pointproofs_vp_bytes *bytes);
+
+void pointproofs_free_vp_string(struct pointproofs_vp_bytes buf);
+
+int32_t pointproofs_vp_deserial(struct pointproofs_vp_bytes pverifier,
+                                struct pointproofs_vp *verifier);
 
 /**
  * Serializing commitments into bytes
  */
-int32_t pointproofs_commit_serial(pointproofs_commitment commit,
-                                  pointproofs_commitment_bytes *bytes);
+int32_t pointproofs_commit_serial(struct pointproofs_commitment commit,
+                                  struct pointproofs_commitment_bytes *bytes);
+
+void pointproofs_free_commit_string(struct pointproofs_commitment_bytes buf);
 
 /**
- * update an existing commitment
+ * Deserializeing bytes into commitments
  */
-int32_t pointproofs_commit_update(pointproofs_pp prover,
-                                  pointproofs_commitment com,
-                                  size_t changed_idx,
-                                  pointproofs_value val_old,
-                                  pointproofs_value val_new,
-                                  pointproofs_commitment *new_com);
+int32_t pointproofs_commit_deserial(struct pointproofs_commitment_bytes commit_bytes,
+                                    struct pointproofs_commitment *commit);
 
 /**
- * Free commitment
+ * Serializing proofs into bytes
  */
-void pointproofs_free_commit(pointproofs_commitment commit);
+int32_t pointproofs_proof_serial(struct pointproofs_proof proof,
+                                 struct pointproofs_proof_bytes *bytes);
 
-void pointproofs_free_commit_string(pointproofs_commitment_bytes buf);
-
-void pointproofs_free_pp_string(pointproofs_pp_bytes buf);
+void pointproofs_free_proof_string(struct pointproofs_proof_bytes buf);
 
 /**
- * Free proof
+ * Deserializeing bytes into proofs
  */
-void pointproofs_free_proof(pointproofs_proof proof);
-
-void pointproofs_free_proof_string(pointproofs_proof_bytes buf);
-
-/**
- * Free prover parameter
- */
-void pointproofs_free_prover_params(pointproofs_pp pp);
-
-/**
- * Free verifier parameter
- */
-void pointproofs_free_verifier_params(pointproofs_vp vp);
-
-void pointproofs_free_vp_string(pointproofs_vp_bytes buf);
+int32_t pointproofs_proof_deserial(struct pointproofs_proof_bytes proof_bytes,
+                                   struct pointproofs_proof *proof);
 
 /**
  * Generating a pair of parameters
@@ -192,113 +181,138 @@ int32_t pointproofs_paramgen(const uint8_t *seedbuf,
                              size_t seedlen,
                              uint8_t ciphersuite,
                              size_t n,
-                             pointproofs_params *param);
-
-int32_t pointproofs_pp_deserial(pointproofs_pp_bytes pprover, pointproofs_pp *prover);
+                             struct pointproofs_params *param);
 
 /**
- * Serializing a prove parameter into bytes
+ * Free prover parameter
  */
-int32_t pointproofs_pp_serial(pointproofs_pp pprover, pointproofs_pp_bytes *bytes);
+void pointproofs_free_prover_params(struct pointproofs_pp pp);
 
 /**
- * Deserializeing bytes into proofs
+ * Free verifier parameter
  */
-int32_t pointproofs_proof_deserial(pointproofs_proof_bytes proof_bytes, pointproofs_proof *proof);
+void pointproofs_free_verifier_params(struct pointproofs_vp vp);
 
 /**
- * Serializing proofs into bytes
+ * Free commitment
  */
-int32_t pointproofs_proof_serial(pointproofs_proof proof, pointproofs_proof_bytes *bytes);
+void pointproofs_free_commit(struct pointproofs_commitment commit);
 
 /**
- * update an existing proof
+ * Free proof
  */
-int32_t pointproofs_proof_update(pointproofs_pp prover,
-                                 pointproofs_proof proof,
-                                 size_t idx,
-                                 size_t changed_idx,
-                                 pointproofs_value val_old,
-                                 pointproofs_value val_new,
-                                 pointproofs_proof *new_proof);
+void pointproofs_free_proof(struct pointproofs_proof proof);
+
+/**
+ * Generate a commitment
+ */
+int32_t pointproofs_commit(struct pointproofs_pp prover,
+                           const struct pointproofs_value *values,
+                           uintptr_t n,
+                           struct pointproofs_commitment *commit);
 
 /**
  * Generate a proof
  */
-int32_t pointproofs_prove(pointproofs_pp prover,
-                          const pointproofs_value *values,
+int32_t pointproofs_prove(struct pointproofs_pp prover,
+                          const struct pointproofs_value *values,
                           uintptr_t n,
                           size_t idx,
-                          pointproofs_proof *proof);
+                          struct pointproofs_proof *proof);
 
 /**
- * aggregate proofs within a same commitment
+ * Generate a batch proof
  */
-int32_t pointproofs_same_commit_aggregate(pointproofs_commitment com,
-                                          const pointproofs_proof *proofs,
-                                          const size_t *set,
-                                          const pointproofs_value *values,
-                                          size_t nvalues,
-                                          size_t param_n,
-                                          pointproofs_proof *agg_proof);
+int32_t pointproofs_prove_batch_aggregated(struct pointproofs_pp prover,
+                                           struct pointproofs_commitment commit,
+                                           const struct pointproofs_value *values,
+                                           size_t n,
+                                           const size_t *idx,
+                                           size_t nindexes,
+                                           struct pointproofs_proof *proof);
 
 /**
- * verify an aggregated proof within a same commitment
+ * update an existing proof
  */
-bool pointproofs_same_commit_batch_verify(pointproofs_vp verifier,
-                                          pointproofs_commitment com,
-                                          pointproofs_proof proof,
-                                          const size_t *set,
-                                          const pointproofs_value *values,
-                                          size_t nvalues);
+int32_t pointproofs_proof_update(struct pointproofs_pp prover,
+                                 struct pointproofs_proof proof,
+                                 size_t idx,
+                                 size_t changed_idx,
+                                 struct pointproofs_value val_old,
+                                 struct pointproofs_value val_new,
+                                 struct pointproofs_proof *new_proof);
+
+/**
+ * update an existing commitment
+ */
+int32_t pointproofs_commit_update(struct pointproofs_pp prover,
+                                  struct pointproofs_commitment com,
+                                  size_t changed_idx,
+                                  struct pointproofs_value val_old,
+                                  struct pointproofs_value val_new,
+                                  struct pointproofs_commitment *new_com);
 
 /**
  * verify the proof against the value and commitment
  */
-bool pointproofs_verify(pointproofs_vp verifier,
-                        pointproofs_commitment com,
-                        pointproofs_proof proof,
-                        pointproofs_value value,
+bool pointproofs_verify(struct pointproofs_vp verifier,
+                        struct pointproofs_commitment com,
+                        struct pointproofs_proof proof,
+                        struct pointproofs_value value,
                         size_t idx);
 
-int32_t pointproofs_vp_deserial(pointproofs_vp_bytes pverifier, pointproofs_vp *verifier);
+/**
+ * aggregate proofs within a same commitment
+ */
+int32_t pointproofs_same_commit_aggregate(struct pointproofs_commitment com,
+                                          const struct pointproofs_proof *proofs,
+                                          const size_t *set,
+                                          const struct pointproofs_value *values,
+                                          size_t nvalues,
+                                          size_t param_n,
+                                          struct pointproofs_proof *agg_proof);
 
 /**
- * Serializing a prove parameter into bytes
+ * verify an aggregated proof within a same commitment
  */
-int32_t pointproofs_vp_serial(pointproofs_vp pverifier, pointproofs_vp_bytes *bytes);
+bool pointproofs_same_commit_batch_verify(struct pointproofs_vp verifier,
+                                          struct pointproofs_commitment com,
+                                          struct pointproofs_proof proof,
+                                          const size_t *set,
+                                          const struct pointproofs_value *values,
+                                          size_t nvalues);
 
 /**
  * aggregated proofs cross commitments
  */
-int32_t pointproofs_x_commit_aggregate_full(const pointproofs_commitment *com,
-                                            const pointproofs_proof *proof,
+int32_t pointproofs_x_commit_aggregate_full(const struct pointproofs_commitment *com,
+                                            const struct pointproofs_proof *proof,
                                             const size_t *set,
-                                            const pointproofs_value *values,
+                                            const struct pointproofs_value *values,
                                             const size_t *commit_indices,
                                             size_t no_commits,
                                             size_t param_n,
-                                            pointproofs_proof *x_proof);
+                                            struct pointproofs_proof *x_proof);
 
 /**
  * aggregated proofs cross commitments
  */
-int32_t pointproofs_x_commit_aggregate_partial(const pointproofs_commitment *com,
-                                               const pointproofs_proof *agg_proof,
+int32_t pointproofs_x_commit_aggregate_partial(const struct pointproofs_commitment *com,
+                                               const struct pointproofs_proof *agg_proof,
                                                const size_t *set,
-                                               const pointproofs_value *values,
+                                               const struct pointproofs_value *values,
                                                const size_t *commit_indices,
                                                size_t no_commits,
                                                size_t param_n,
-                                               pointproofs_proof *x_proof);
+                                               struct pointproofs_proof *x_proof);
 
 /**
  * verify an aggregated proof across commitments
  */
-bool pointproofs_x_commit_batch_verify(pointproofs_vp verifier,
-                                       const pointproofs_commitment *com,
-                                       pointproofs_proof proof,
+bool pointproofs_x_commit_batch_verify(struct pointproofs_vp verifier,
+                                       const struct pointproofs_commitment *com,
+                                       struct pointproofs_proof proof,
                                        const size_t *set,
-                                       const pointproofs_value *values,
+                                       const struct pointproofs_value *values,
                                        const size_t *commit_indices,
                                        size_t no_commits);

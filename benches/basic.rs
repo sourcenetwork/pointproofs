@@ -17,11 +17,11 @@ use std::time::Duration;
 
 criterion_group!(
     basic,
-    aggregate2,
-    randomized_batch_new_proof,
-    commit_update,
-    single_commit,
-    aggregate,
+    // aggregate2,
+    // randomized_batch_new_proof,
+    // commit_update,
+    single_commit
+    // aggregate,
 );
 criterion_main!(basic);
 
@@ -127,7 +127,7 @@ fn randomized_batch_new_proof(c: &mut Criterion) {
 }
 
 fn single_commit(c: &mut Criterion) {
-    let n = 1024;
+    let n = 256;
 
     let mut values: Vec<String> = Vec::with_capacity(n);
     for i in 0..n {
@@ -154,14 +154,17 @@ fn single_commit(c: &mut Criterion) {
         n,
     )
     .unwrap();
+    let mut pp256 = pp.clone();
+    pp256.precomp_256();
+    // let pp256 = pp.cl
     println!("parameters generated");
 
-    let mut com = Commitment::new(&pp, &values).unwrap();
+    let mut com = Commitment::new(&pp256, &values).unwrap();
     let mut proofs: Vec<Proof> = vec![];
     let mut set: Vec<usize> = vec![];
     let mut value_sub_vector: Vec<String> = vec![];
-    for i in 0..8 {
-        let tmp = Proof::new(&pp, &values, i).unwrap();
+    for i in 0..256 {
+        let tmp = Proof::new(&pp256, &values, i).unwrap();
         proofs.push(tmp);
         set.push(i);
         value_sub_vector.push(values[i].clone());
@@ -169,7 +172,7 @@ fn single_commit(c: &mut Criterion) {
     println!("pre_generation finished");
 
     // Commitment creation (we have for N=1024)
-    let pp_clone = pp.clone();
+    let pp_clone = pp256.clone();
     let values_clone = values.clone();
     let bench_str = format!("single_commit_n_{}_commit_new", n);
     let mut bench = Benchmark::new(bench_str, move |b| {
@@ -177,7 +180,7 @@ fn single_commit(c: &mut Criterion) {
     });
 
     // Single proof generation
-    let pp_clone = pp.clone();
+    let pp_clone = pp256.clone();
     let values_clone = values.clone();
     let bench_str = format!("single_commit_n_{}_proof_new", n);
     bench = bench.with_function(bench_str, move |b| {
@@ -185,7 +188,7 @@ fn single_commit(c: &mut Criterion) {
     });
 
     // batch proof generation without aggregation
-    let pp_clone = pp.clone();
+    let pp_clone = pp256.clone();
     let values_clone = values.clone();
     let set_clone = set.clone();
     let bench_str = format!("single_commit_n_{}_proof_batch_new", n);
@@ -223,7 +226,7 @@ fn single_commit(c: &mut Criterion) {
         });
     });
 
-    let num_proof_array = [2, 4, 8, 16, 32, 64, 128, 256, 512];
+    let num_proof_array = [2, 4, 8, 16, 32, 64, 128, 256];
     for e in num_proof_array.iter() {
         let mut set2: Vec<usize> = Vec::with_capacity(8);
         for i in 0..*e {

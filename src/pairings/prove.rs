@@ -148,11 +148,12 @@ impl Proof {
 
         // check index is valid
         if indices.len() > prover_params.n || indices.is_empty() {
-            return Err(ERR_INVALID_INDEX.to_owned());
+            return Err(ERR_INVALID_INDEX_OUT_OF_BOUNDS.to_owned());
         };
         for e in indices {
+            println!("indicie (rust): {}", *e);
             if *e >= prover_params.n {
-                return Err(ERR_INVALID_INDEX.to_owned());
+                return Err(ERR_INVALID_INDEX_TOO_BIG.to_owned());
             }
         }
 
@@ -162,7 +163,7 @@ impl Proof {
 
         // check param
         if values.len() != prover_params.n {
-            return Err(ERR_INVALID_INDEX.to_owned());
+            return Err(ERR_INVALID_INDEX_MISMATCH_LENGTH.to_owned());
         }
 
         // generate the list of sub_values

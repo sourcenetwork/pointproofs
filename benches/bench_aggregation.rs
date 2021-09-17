@@ -13,9 +13,9 @@ use pairing::serdes::SerDes;
 use pointproofs::pairings::*;
 use std::time::Duration;
 
-const N_ARRAY: [usize; 2] = [1024, 32768];
+const N_ARRAY: [usize; 2] = [256, 1024];
 const P_ARRAY: [usize; 4] = [1, 8, 16, 32];
-const C_ARRAY: [usize; 1] = [4096];
+const C_ARRAY: [usize; 1] = [255];
 
 criterion_group!(benches, bench_main,);
 

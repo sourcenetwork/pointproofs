@@ -432,8 +432,8 @@ fn test_batch_new_proof() {
     assert!(agg_proof.same_commit_batch_verify(
         &verifier_params,
         &com,
-        &indices,
-        &value_sub_vector
+        &indices[0..indices.len()-1],
+        &value_sub_vector[0..indices.len()-1]
     ));
     assert!(
         agg_proof.same_commit_batch_verify(&verifier_params3, &com, &indices, &value_sub_vector),

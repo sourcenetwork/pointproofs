@@ -388,14 +388,15 @@ pub unsafe extern "C" fn pointproofs_prove(
     0
 }
 
-/// Generate a proof
+/// Generate a batch proof
 #[no_mangle]
 pub unsafe extern "C" fn pointproofs_prove_batch_aggregated(
     prover: pointproofs_pp,
     commit: pointproofs_commitment,
     values: *const pointproofs_value,
-    n: usize,
-    idx: &[libc::size_t],
+    n: libc::size_t,
+    idx: *const libc::size_t,
+    nindexes: libc::size_t,
     proof: *mut pointproofs_proof,
 ) -> i32 {
     let pprover = &*(prover.data as *const ProverParams);
@@ -404,8 +405,17 @@ pub unsafe extern "C" fn pointproofs_prove_batch_aggregated(
     for e in tmp {
         vvalues.push(pointproofs_value_slice(&e).to_vec());
     }
+    
+    // parse indices
+    let tmp = slice::from_raw_parts::<libc::size_t>(idx, nindexes);
+    let mut set_list: Vec<usize> = vec![];
+    for e in tmp {
+        println!("indicie (c_api): {}", *e);
+        set_list.push(*e);
+    }
+
     let pcom = &*(commit.data as *const Commitment);
-    let pr = Proof::batch_new_aggregated(pprover, pcom, &vvalues, idx).unwrap();
+    let pr = Proof::batch_new_aggregated(pprover, pcom, &vvalues, &set_list).unwrap();
     let buf_box = Box::new(pr);
 
     *proof = pointproofs_proof {
