@@ -21,7 +21,7 @@
   sha2 = "0.8"
   libc = { version = "0.2", features = ["align"] }
   bigint = { version = "4", default-features = false }
-  pointproofs-paramgen = {path = "../pointproofs-paramgen" }#{ git = "https://github.com/algorand/pointproofs-paramgen"}
+  pointproofs-paramgen = {git = "https://github.com/sourcenetwork/pointproofs-paramgen", branch = "defra/experiment"}
 
 [features]
   # group switched: PointproofsG1 is in fact G2 in BLS-group
