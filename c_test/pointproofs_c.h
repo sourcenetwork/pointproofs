@@ -269,7 +269,7 @@ bool pointproofs_verify(struct pointproofs_vp verifier,
  */
 int32_t pointproofs_same_commit_aggregate(struct pointproofs_commitment com,
                                           const struct pointproofs_proof *proofs,
-                                          const size_t *set,
+                                          const uint32_t *set,
                                           const struct pointproofs_value *values,
                                           size_t nvalues,
                                           size_t param_n,
