@@ -302,9 +302,9 @@ int32_t pointproofs_x_commit_aggregate_full(const struct pointproofs_commitment 
  */
 int32_t pointproofs_x_commit_aggregate_partial(const struct pointproofs_commitment *com,
                                                const struct pointproofs_proof *agg_proof,
-                                               const size_t *set,
+                                               const uint32_t *set,
                                                const struct pointproofs_value *values,
-                                               const size_t *commit_indices,
+                                               const uint32_t *commit_indices,
                                                size_t no_commits,
                                                size_t param_n,
                                                struct pointproofs_proof *x_proof);
@@ -315,9 +315,9 @@ int32_t pointproofs_x_commit_aggregate_partial(const struct pointproofs_commitme
 bool pointproofs_x_commit_batch_verify(struct pointproofs_vp verifier,
                                        const struct pointproofs_commitment *com,
                                        struct pointproofs_proof proof,
-                                       const size_t *set,
+                                       const uint32_t *set,
                                        const struct pointproofs_value *values,
-                                       const size_t *commit_indices,
+                                       const uint32_t *commit_indices,
                                        size_t no_commits);
 
 #endif /* __POINTPROOFS_H */

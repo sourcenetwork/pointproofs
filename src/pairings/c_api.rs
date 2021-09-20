@@ -659,9 +659,9 @@ pub unsafe extern "C" fn pointproofs_x_commit_aggregate_full(
 pub unsafe extern "C" fn pointproofs_x_commit_aggregate_partial(
     com: *const pointproofs_commitment,
     agg_proof: *const pointproofs_proof,
-    set: *const libc::size_t,
+    set: *const libc::uint32_t,
     values: *const pointproofs_value,
-    commit_indices: *const libc::size_t,
+    commit_indices: *const libc::uint32_t,
     no_commits: libc::size_t,
     param_n: libc::size_t,
     x_proof: *mut pointproofs_proof,
@@ -675,15 +675,25 @@ pub unsafe extern "C" fn pointproofs_x_commit_aggregate_partial(
 
     // parse index counters
     let mut total = 0;
-    let tmp = slice::from_raw_parts::<usize>(commit_indices, no_commits);
+    let tmp = slice::from_raw_parts(commit_indices as *const u32, no_commits);
     let mut commit_indices_vec: Vec<usize> = vec![];
     for e in tmp {
-        total += *e;
-        commit_indices_vec.push(*e);
+        total += *e as usize;
+        commit_indices_vec.push(*e as usize);
     }
+    // let tmp = slice::from_raw_parts(commit_indices as *const u32, nindexes);
+    // let mut set_list: Vec<usize> = vec![];
+    // for e in tmp {
+    //     set_list.push(*e as usize);
+    // }
 
     // parse indices, values and proofs as a 1-dim arrays
-    let set_tmp = slice::from_raw_parts::<libc::size_t>(set, total);
+    let set_tmp_tmp = slice::from_raw_parts(set as *const u32, total);
+    let mut set_tmp: Vec<usize> = vec![];
+    for e in set_tmp_tmp {
+        set_tmp.push(*e as usize);
+    }
+
     let value_tmp = slice::from_raw_parts::<pointproofs_value>(values, total);
     let agg_proof_tmp = slice::from_raw_parts::<pointproofs_proof>(agg_proof, no_commits);
 
@@ -714,7 +724,7 @@ pub unsafe extern "C" fn pointproofs_x_commit_aggregate_partial(
     ) {
         Ok(p) => p,
         Err(e) => {
-            println!("C wrapper, x-commit aggregation failed: {}", e);
+            // println!("C wrapper, x-commit aggregation failed: {}", e);
             return -1;
         }
     };
@@ -731,9 +741,9 @@ pub unsafe extern "C" fn pointproofs_x_commit_batch_verify(
     verifier: pointproofs_vp,
     com: *const pointproofs_commitment,
     proof: pointproofs_proof,
-    set: *const libc::size_t,
+    set: *const libc::uint32_t,
     values: *const pointproofs_value,
-    commit_indices: *const libc::size_t,
+    commit_indices: *const libc::uint32_t,
     no_commits: libc::size_t,
 ) -> bool {
     // parse commits
@@ -745,15 +755,20 @@ pub unsafe extern "C" fn pointproofs_x_commit_batch_verify(
 
     // parse index counters
     let mut total = 0;
-    let tmp = slice::from_raw_parts::<usize>(commit_indices, no_commits);
+    let tmp = slice::from_raw_parts(commit_indices as *const u32, no_commits);
     let mut commit_indices_vec: Vec<usize> = vec![];
     for e in tmp {
-        total += *e;
-        commit_indices_vec.push(*e);
+        total += *e as usize;
+        commit_indices_vec.push(*e as usize);
     }
 
     // parse indices, values and proofs as a 1-dim arrays
-    let set_tmp = slice::from_raw_parts::<libc::size_t>(set, total);
+    let set_tmp_tmp = slice::from_raw_parts(set as *const u32, total);
+    let mut set_tmp: Vec<usize> = vec![];
+    for e in set_tmp_tmp {
+        set_tmp.push(*e as usize);
+    }
+
     let value_tmp = slice::from_raw_parts::<pointproofs_value>(values, total);
 
     // convert them into 2-dim arrays
